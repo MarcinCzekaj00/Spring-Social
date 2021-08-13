@@ -6,8 +6,11 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -44,9 +47,11 @@ public class UserService {
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
             org.springframework.security.core.userdetails.User userToAdd = new org.springframework.security.core.userdetails.User(
-                                                                                        user.getEmail(), passwordHash,authorities);
+                                                                                       user.getEmail(), passwordHash,authorities);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordHash, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             jdbcUserDetailsManager.createUser(userToAdd);
-        }catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e){
             Set<ConstraintViolation<?>> errors = e.getConstraintViolations();
             errors.forEach(err -> System.err.println(
                     err.getPropertyPath() + " " +
