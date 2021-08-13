@@ -10,7 +10,6 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @Entity
 @JsonSerialize(using = RelationshipSerializer.class)
 public class Relationship {

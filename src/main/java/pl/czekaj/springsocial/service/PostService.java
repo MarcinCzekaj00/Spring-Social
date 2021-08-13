@@ -7,7 +7,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import pl.czekaj.springsocial.dto.CommentDto;
 import pl.czekaj.springsocial.dto.PostDto;
+import pl.czekaj.springsocial.dto.mapper.CommentDtoMapper;
 import pl.czekaj.springsocial.dto.mapper.PostDtoMapper;
 import pl.czekaj.springsocial.dto.PostWithoutCommentDto;
 import pl.czekaj.springsocial.dto.mapper.PostWithoutCommentDtoMapper;
@@ -40,15 +42,17 @@ public class PostService {
     }
 
     @Cacheable(cacheNames = "getPostsWithComments")
-    public List<Post> getPostsWithComments(int page, Sort.Direction sort){
+    public List<PostDto> getPostsWithComments(int page, Sort.Direction sort){
         List<Post> posts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
-        List<Long> ids = posts.stream()
-                .map(Post::getPostId)
+        List <PostDto> postDtos = PostDtoMapper.mapToPostDtos(posts);
+        List<Long> ids = postDtos.stream()
+                .map(PostDto::getId)
                 .collect(Collectors.toList());
         List<Comment> comments = commentRepository.findAllByPostIdIn(ids);
-        posts.forEach(post -> post.setComments(extractComments(comments,post.getPostId())));
+        List<CommentDto> commentDtos = CommentDtoMapper.mapToCommentDtos(comments);
+        postDtos.forEach(post -> post.setComments(extractComments(comments,post.getId())));
 
-        return posts;
+        return postDtos;
     }
 
 

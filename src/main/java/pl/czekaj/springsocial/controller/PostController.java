@@ -36,7 +36,7 @@ public class PostController {
     public ResponseEntity<List<PostDto>> getPostsWithComments(@RequestParam(required = false) Integer page, Sort.Direction sort){
         int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
         Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
-        List<PostDto> posts = PostDtoMapper.mapToPostDtos(postService.getPostsWithComments(pageNumber, sortDirection));
+        List<PostDto> posts = postService.getPostsWithComments(pageNumber, sortDirection);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
