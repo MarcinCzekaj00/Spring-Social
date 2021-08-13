@@ -1,13 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8"></meta>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Registration form</title>
 </head>
 <body>
     <h1>Registration form</h1>
     <form action="#" method="post" th:action="@{/register}" th:object="${user}">
-        <input th:field="*{firstName}" placeholder="First Name" />
+        <input th:value="*{firstName}" placeholder="First Name" />
         <p th:errors="*{firstName}">First name errors</p><br />
         <input th:field="*{lastName}" placeholder="Last Name" />
         <p th:errors="*{lastName}">Last name errors</p><br />

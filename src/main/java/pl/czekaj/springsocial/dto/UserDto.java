@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import pl.czekaj.springsocial.enums.Role;
+import pl.czekaj.springsocial.model.Post;
 import pl.czekaj.springsocial.model.Relationship;
 import pl.czekaj.springsocial.model.UserDetails;
 
@@ -24,5 +25,6 @@ public class UserDto {
     private Role role;
     private UserDetails details;
     private Set<Relationship> friends;
+    private Set<Post> posts;
 
 }

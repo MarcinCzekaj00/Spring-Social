@@ -28,6 +28,7 @@ public class UserDtoMapper {
                 .role(user.getRole())
                 .details(user.getDetails())
                 .friends(user.getFriends())
+                .posts(user.getPostUserId())
                 .build();
     }
 }

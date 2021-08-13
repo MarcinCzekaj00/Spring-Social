@@ -48,4 +48,8 @@ public class User {
     @JoinColumn(name = "friends", referencedColumnName = "userId" )
     private Set<Relationship> friends;
 
+    @OneToMany(cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @JoinColumn(name = "postUserId", referencedColumnName = "userId" )
+    private Set<Post> postUserId;
+
 }
