@@ -85,4 +85,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public UserDetailsManager userDetailsManager(){
         return new JdbcUserDetailsManager(dataSource);
     }
+
+    @Bean
+    public JdbcUserDetailsManager jdbcUserDetailsManager() throws Exception {
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
+        jdbcUserDetailsManager.setDataSource(dataSource);
+        return jdbcUserDetailsManager;
+    }
+
 }

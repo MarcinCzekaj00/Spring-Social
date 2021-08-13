@@ -6,7 +6,12 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import pl.czekaj.springsocial.dto.UserDto;
 import pl.czekaj.springsocial.dto.mapper.UserDtoMapper;
@@ -17,6 +22,7 @@ import pl.czekaj.springsocial.repository.UserRepository;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +32,7 @@ public class UserService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private JdbcUserDetailsManager jdbcUserDetailsManager;
     private static final int PAGE_SIZE = 10;
 
     public void addWithDefaultRole(User user){
@@ -34,6 +41,11 @@ public class UserService {
         user.setPassword(passwordHash);
         try{
             userRepository.save(user);
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            org.springframework.security.core.userdetails.User userToAdd = new org.springframework.security.core.userdetails.User(
+                                                                                        user.getEmail(), passwordHash,authorities);
+            jdbcUserDetailsManager.createUser(userToAdd);
         }catch (ConstraintViolationException e){
             Set<ConstraintViolation<?>> errors = e.getConstraintViolations();
             errors.forEach(err -> System.err.println(
