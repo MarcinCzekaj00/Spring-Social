@@ -1,4 +1,4 @@
-package pl.czekaj.springsocial.config;
+package pl.czekaj.springsocial.config.jwtAuthentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

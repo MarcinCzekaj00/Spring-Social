@@ -1,4 +1,4 @@
-package pl.czekaj.springsocial.config;
+package pl.czekaj.springsocial.config.jwtAuthentication;
 
 import lombok.Getter;
 

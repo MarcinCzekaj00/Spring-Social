@@ -2,15 +2,24 @@ package pl.czekaj.springsocial.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.czekaj.springsocial.dto.UserDto;
+import pl.czekaj.springsocial.model.Post;
+import pl.czekaj.springsocial.model.Relationship;
 import pl.czekaj.springsocial.model.User;
 import pl.czekaj.springsocial.service.UserService;
 
 import java.util.List;
+import java.util.Set;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.*;
 
 @RestController
@@ -20,24 +29,62 @@ public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(@RequestParam(required = false) Integer page, Sort.Direction sort){
+    public ResponseEntity<CollectionModel<UserDto>> getUsers(@RequestParam(required = false) Integer page, Sort.Direction sort){
         int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
         Sort.Direction sortDirection = getSortDirectionNotNullAndASC(sort);
-        List<UserDto> details = userService.getUsers(pageNumber,sortDirection);
-        return new ResponseEntity<>(details, HttpStatus.OK);
+        List<UserDto> users = userService.getUsers(pageNumber,sortDirection);
+        for(UserDto user: users){
+            Set<Post> posts = user.getPosts();
+            Set<Relationship> relationships = user.getFriends();
+            for(Relationship relationship: relationships){
+                user.add(linkTo(methodOn(UserController.class).getUser(relationship.getToUserId())).withRel("Friend"));
+            }
+            for(Post post: posts){
+                user.add(linkTo(methodOn(PostController.class).getSinglePost(post.getPostId())).withRel("Post"));
+            }
+            user.add(linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel());
+        }
+        Link link = linkTo(methodOn(UserController.class).getUsers(pageNumber,sortDirection)).withSelfRel();
+        CollectionModel<UserDto> userResource = new CollectionModel<>(users,link);
+        return new ResponseEntity<>(userResource, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id){
+    public ResponseEntity<EntityModel<UserDto>> getUser(@PathVariable Long id){
         UserDto user = userService.getSingleUser(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        Set<Post> posts = user.getPosts();
+        Set<Relationship> relationships = user.getFriends();
+        for(Relationship relationship: relationships){
+            user.add(linkTo(methodOn(UserController.class).getUser(relationship.getToUserId())).withRel("Friend"));
+        }
+        for(Post post: posts){
+            user.add(linkTo(methodOn(PostController.class).getSinglePost(post.getPostId())).withRel("Post"));
+        }
+        Link link = linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel();
+        EntityModel<UserDto> userResource = new EntityModel<>(user,link);
+        return new ResponseEntity<>(userResource, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/info")
-    public ResponseEntity<User> getUserInfo(@PathVariable Long id){
+    public ResponseEntity<EntityModel<User>> getUserInfo(@PathVariable Long id){
         User user = userService.getUserInfo(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        if(user.getDetails()!=null){
+            user.add(linkTo(methodOn(UserDetailsController.class).getDetails(user.getUserId())).withRel("Details"));
+        }
+        Set<Post> posts = user.getPosts();
+        Set<Relationship> relationships = user.getFriends();
+        for(Relationship relationship: relationships){
+            user.add(linkTo(methodOn(UserController.class).getUser(relationship.getToUserId())).withRel("Friend"));
+        }
+        for(Post post: posts){
+            user.add(linkTo(methodOn(PostController.class).getSinglePost(post.getPostId())).withRel("Post"));
+        }
+        Link link = linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel();
+        EntityModel<User> userResource = new EntityModel<>(user,link);
+        return new ResponseEntity<>(userResource, HttpStatus.OK);
     }
 
     @PostMapping

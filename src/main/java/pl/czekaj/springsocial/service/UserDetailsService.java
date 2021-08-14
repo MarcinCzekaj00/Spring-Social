@@ -25,11 +25,14 @@ public class UserDetailsService {
     private final UserDetailsRepository userDetailsRepository;
     private final UserRepository userRepository;
 
+    /* Method returning all details
+       Uncomment it and getDetails in UserDetailsController if needed
+
     @Cacheable(cacheNames = "getDetails")
     public List<UserDetailsDto> getDetails(int page, Sort.Direction sort) {
         List<UserDetails> details = userDetailsRepository.findAllDetails(PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "userDetailsId")));
         return UserDetailsDtoMapper.mapToUserDetailsDtos(details);
-    }
+    }*/
 
     @Cacheable(cacheNames = "getSingleDetails")
     public UserDetailsDto getSingleDetails(Long id){

@@ -1,18 +1,30 @@
 package pl.czekaj.springsocial.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper;
+import pl.czekaj.springsocial.dto.CommentDto;
 import pl.czekaj.springsocial.dto.PostWithoutCommentDto;
 import pl.czekaj.springsocial.dto.PostDto;
 import pl.czekaj.springsocial.dto.mapper.PostDtoMapper;
+import pl.czekaj.springsocial.model.Comment;
 import pl.czekaj.springsocial.model.Post;
+import pl.czekaj.springsocial.service.CommentService;
 import pl.czekaj.springsocial.service.PostService;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.getPageNumberGreaterThenZeroAndNotNull;
 import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.getSortDirectionNotNullAndDESC;
 
@@ -25,24 +37,48 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostWithoutCommentDto>> getPosts(@RequestParam(required = false) Integer page, Sort.Direction sort){
+    public ResponseEntity<CollectionModel<PostWithoutCommentDto>> getPosts(@RequestParam(required = false) Integer page, Sort.Direction sort){
         int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
         Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
         List<PostWithoutCommentDto> posts = postService.getPosts(pageNumber,sortDirection);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        for (PostWithoutCommentDto post: posts){
+            post.add(linkTo(PostController.class).slash(post.getId()).withRel("Post with comments"));
+        }
+        Link link = linkTo(PostController.class).withSelfRel();
+        CollectionModel<PostWithoutCommentDto> postResource = new CollectionModel<>(posts,link);
+        return new ResponseEntity<>(postResource, HttpStatus.OK);
     }
 
     @GetMapping("/comments")
-    public ResponseEntity<List<PostDto>> getPostsWithComments(@RequestParam(required = false) Integer page, Sort.Direction sort){
+    public ResponseEntity<CollectionModel<PostDto>> getPostsWithComments(@RequestParam(required = false) Integer page, Sort.Direction sort){
         int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
         Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
         List<PostDto> posts = postService.getPostsWithComments(pageNumber, sortDirection);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        for (PostDto post: posts){
+            Long postId = post.getId();
+            post.add(linkTo(PostController.class).slash(post.getId()).withSelfRel());
+            List <Comment> comments = post.getComments();
+            for (Comment comment:comments){
+                post.add(linkTo(methodOn(CommentController.class).getSingleComment(postId,comment.getCommentId())).withRel("Comments"));
+            }
+            post.add(linkTo(methodOn(CommentController.class).getCommentsInPost(postId,pageNumber,sortDirection)).withRel("All comments from this post"));
+        }
+        Link link = linkTo(methodOn(PostController.class).getPostsWithComments(pageNumber,sortDirection)).withSelfRel();
+        CollectionModel<PostDto> postResource = new CollectionModel<>(posts,link);
+        return new ResponseEntity<>(postResource, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getSinglePost(@PathVariable Long id){
-        return new ResponseEntity<>(postService.getSinglePost(id), HttpStatus.OK);
+    public ResponseEntity<EntityModel<PostDto>> getSinglePost(@PathVariable Long id){
+        PostDto post = postService.getSinglePost(id);
+        List<Comment> comments = post.getComments();
+        post.add(linkTo(PostController.class).slash(id).withSelfRel());
+        for(Comment comment: comments){
+            post.add(linkTo(methodOn(CommentController.class).getSingleComment(id,comment.getCommentId())).withRel("Comments"));
+        }
+        Link link = linkTo(PostController.class).withRel("All Posts");
+        EntityModel<PostDto> postDtoResource = new EntityModel<>(post,link);
+        return new ResponseEntity<>(postDtoResource, HttpStatus.OK);
     }
 
     @PostMapping

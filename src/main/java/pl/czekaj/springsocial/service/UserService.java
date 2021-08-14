@@ -35,8 +35,8 @@ public class UserService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
-    private JdbcUserDetailsManager jdbcUserDetailsManager;
-    private static final int PAGE_SIZE = 10;
+    private UserDetailsManager userDetailsManager;
+    private static final int PAGE_SIZE = 50;
 
     public void addWithDefaultRole(User user){
         user.setRole(Role.user);
@@ -50,7 +50,7 @@ public class UserService {
                                                                                        user.getEmail(), passwordHash,authorities);
             Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordHash, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            jdbcUserDetailsManager.createUser(userToAdd);
+            userDetailsManager.createUser(userToAdd);
         } catch (ConstraintViolationException e){
             Set<ConstraintViolation<?>> errors = e.getConstraintViolations();
             errors.forEach(err -> System.err.println(

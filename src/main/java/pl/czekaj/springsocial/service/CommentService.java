@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CommentService {
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 50;
     private final CommentRepository commentRepository;
 
     @Cacheable(cacheNames = "getComments")
@@ -67,7 +67,7 @@ public class CommentService {
     }
 
     @CacheEvict(cacheNames = "deleteComment")
-    public void deleteComment(Long id){
-        commentRepository.deleteById(id);
+    public void deleteComment(Long p_id,Long c_id){
+        commentRepository.deleteByCommentIdAndPostId(c_id,p_id);
     }
 }

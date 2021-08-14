@@ -1,26 +1,29 @@
 package pl.czekaj.springsocial.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import pl.czekaj.springsocial.config.jwtAuthentication.JsonObjectAuthenticationFilter;
+import pl.czekaj.springsocial.config.jwtAuthentication.JwtAuthorizationFilter;
+import pl.czekaj.springsocial.config.jwtAuthentication.RestAuthenticationFailureHandler;
+import pl.czekaj.springsocial.config.jwtAuthentication.RestAuthenticationSuccessHandler;
 
 import javax.sql.DataSource;
 
-
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -41,17 +44,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        return passwordEncoder;
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
-                .withUser("test")
-                .password("{bcrypt}" + new BCryptPasswordEncoder().encode("test"))
-                .roles("USER");
+                .withUser("admin")
+                .password("{bcrypt}" + new BCryptPasswordEncoder().encode("password"))
+                .roles("ADMIN");
     }
 
     @Override
@@ -61,16 +63,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .httpBasic()
-                .and()
-                .addFilter(authenticationFilter())
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(),userDetailsManager(),secret))
-                .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                .anyRequest().permitAll();
+                //.and()
+                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                //.and()
+                //.httpBasic()
+                //.and()
+                //.addFilter(authenticationFilter())
+                //.addFilter(new JwtAuthorizationFilter(authenticationManager(),userDetailsManager(),secret))
+                //.exceptionHandling()
+                //.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 
     public JsonObjectAuthenticationFilter authenticationFilter() throws Exception {
@@ -84,13 +86,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public UserDetailsManager userDetailsManager(){
         return new JdbcUserDetailsManager(dataSource);
-    }
-
-    @Bean
-    public JdbcUserDetailsManager jdbcUserDetailsManager() throws Exception {
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
-        jdbcUserDetailsManager.setDataSource(dataSource);
-        return jdbcUserDetailsManager;
     }
 
 }

@@ -1,4 +1,4 @@
-package pl.czekaj.springsocial.config;
+package pl.czekaj.springsocial.config.jwtAuthentication;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

@@ -1,8 +1,7 @@
 package pl.czekaj.springsocial.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 import pl.czekaj.springsocial.enums.Role;
 import pl.czekaj.springsocial.validator.UniqueEmail;
 
@@ -14,9 +13,11 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EqualsAndHashCode
-public class User {
+public class User extends RepresentationModel<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +51,6 @@ public class User {
 
     @OneToMany(cascade = CascadeType.REMOVE,orphanRemoval = true)
     @JoinColumn(name = "postUserId", referencedColumnName = "userId" )
-    private Set<Post> postUserId;
+    private Set<Post> posts;
 
 }

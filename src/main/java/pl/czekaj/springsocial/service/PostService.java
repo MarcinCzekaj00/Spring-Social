@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 50;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 

@@ -19,7 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class RelationshipService {
 
-    private static final int PAGE_SIZE = 20;
+    private static final int PAGE_SIZE = 30;
     private RelationshipRepository relationshipRepository;
     private UserRepository userRepository;
 

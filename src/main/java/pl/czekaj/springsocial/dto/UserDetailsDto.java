@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-public class UserDetailsDto {
+public class UserDetailsDto extends RepresentationModel<UserDetailsDto> {
 
     private Long userDetailsId;
     private LocalDateTime dateOfBirth;
