@@ -1,5 +1,6 @@
 package pl.czekaj.springsocial.controller;
 
+import javassist.runtime.Desc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.czekaj.springsocial.controller.controllerHelper.PageHelper;
+import pl.czekaj.springsocial.controller.controllerHelper.SortDirectionHelper;
 import pl.czekaj.springsocial.dto.UserDto;
 import pl.czekaj.springsocial.model.Post;
 import pl.czekaj.springsocial.model.Relationship;
@@ -20,7 +23,6 @@ import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,9 +33,10 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<CollectionModel<UserDto>> getUsers(@RequestParam(required = false) Integer page, Sort.Direction sort){
-        int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
-        Sort.Direction sortDirection = getSortDirectionNotNullAndASC(sort);
+    public ResponseEntity<CollectionModel<UserDto>> getUsers(@RequestParam(required = false) Integer page,
+                                                             @RequestParam(required = false, defaultValue = "ASC") Sort.Direction sort){
+        int pageNumber = PageHelper.getPageNumberGreaterThenZeroAndNotNull(page);
+        Sort.Direction sortDirection = SortDirectionHelper.getSortDirection(sort);
         List<UserDto> users = userService.getUsers(pageNumber,sortDirection);
         for(UserDto user: users){
             Set<Post> posts = user.getPosts();

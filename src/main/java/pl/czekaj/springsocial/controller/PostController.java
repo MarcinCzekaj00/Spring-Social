@@ -1,32 +1,27 @@
 package pl.czekaj.springsocial.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper;
+import pl.czekaj.springsocial.controller.controllerHelper.PageHelper;
+import pl.czekaj.springsocial.controller.controllerHelper.SortDirectionHelper;
 import pl.czekaj.springsocial.dto.CommentDto;
 import pl.czekaj.springsocial.dto.PostWithoutCommentDto;
 import pl.czekaj.springsocial.dto.PostDto;
-import pl.czekaj.springsocial.dto.mapper.PostDtoMapper;
 import pl.czekaj.springsocial.model.Comment;
 import pl.czekaj.springsocial.model.Post;
 import pl.czekaj.springsocial.service.CommentService;
 import pl.czekaj.springsocial.service.PostService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.getPageNumberGreaterThenZeroAndNotNull;
-import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.getSortDirectionNotNullAndDESC;
 
 
 @RequiredArgsConstructor
@@ -35,11 +30,13 @@ import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDire
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<CollectionModel<PostWithoutCommentDto>> getPosts(@RequestParam(required = false) Integer page, Sort.Direction sort){
-        int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
-        Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
+    public ResponseEntity<CollectionModel<PostWithoutCommentDto>> getPosts(@RequestParam(required = false) Integer page,
+                                                                           @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sort){
+        int pageNumber = PageHelper.getPageNumberGreaterThenZeroAndNotNull(page);
+        Sort.Direction sortDirection = SortDirectionHelper.getSortDirection(sort);
         List<PostWithoutCommentDto> posts = postService.getPosts(pageNumber,sortDirection);
         for (PostWithoutCommentDto post: posts){
             post.add(linkTo(PostController.class).slash(post.getId()).withRel("Post with comments"));
@@ -50,15 +47,16 @@ public class PostController {
     }
 
     @GetMapping("/comments")
-    public ResponseEntity<CollectionModel<PostDto>> getPostsWithComments(@RequestParam(required = false) Integer page, Sort.Direction sort){
-        int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
-        Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
+    public ResponseEntity<CollectionModel<PostDto>> getPostsWithComments(@RequestParam(required = false) Integer page,
+                                                                         @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sort){
+        int pageNumber = PageHelper.getPageNumberGreaterThenZeroAndNotNull(page);
+        Sort.Direction sortDirection = SortDirectionHelper.getSortDirection(sort);
         List<PostDto> posts = postService.getPostsWithComments(pageNumber, sortDirection);
         for (PostDto post: posts){
             Long postId = post.getId();
             post.add(linkTo(PostController.class).slash(post.getId()).withSelfRel());
-            List <Comment> comments = post.getComments();
-            for (Comment comment:comments){
+            List <CommentDto> comments = commentService.getComments(pageNumber,sortDirection);
+            for (CommentDto comment:comments){
                 post.add(linkTo(methodOn(CommentController.class).getSingleComment(postId,comment.getCommentId())).withRel("Comments"));
             }
             post.add(linkTo(methodOn(CommentController.class).getCommentsInPost(postId,pageNumber,sortDirection)).withRel("All comments from this post"));

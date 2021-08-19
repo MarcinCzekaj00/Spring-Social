@@ -8,14 +8,14 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.czekaj.springsocial.controller.controllerHelper.PageHelper;
+import pl.czekaj.springsocial.controller.controllerHelper.SortDirectionHelper;
 import pl.czekaj.springsocial.dto.CommentDto;
 import pl.czekaj.springsocial.model.Comment;
 import pl.czekaj.springsocial.service.CommentService;
 import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.getPageNumberGreaterThenZeroAndNotNull;
-import static pl.czekaj.springsocial.controller.controllerHelper.PageAndSortDirectionHelper.getSortDirectionNotNullAndDESC;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,9 +24,10 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("/comments")
-    public ResponseEntity<CollectionModel<CommentDto>> getComments(@RequestParam(required = false) Integer page, Sort.Direction sort){
-        int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
-        Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
+    public ResponseEntity<CollectionModel<CommentDto>> getComments(@RequestParam(required = false) Integer page,
+                                                                   @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sort){
+        int pageNumber = PageHelper.getPageNumberGreaterThenZeroAndNotNull(page);
+        Sort.Direction sortDirection = SortDirectionHelper.getSortDirection(sort);
         List<CommentDto> comments = commentService.getComments(pageNumber,sortDirection);
         for (CommentDto comment: comments){
             comment.add(linkTo(methodOn(CommentController.class).getCommentsInPost(comment.getPostId(),pageNumber,sortDirection))
@@ -38,9 +39,10 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<CollectionModel<CommentDto>> getCommentsInPost(@PathVariable Long postId, @RequestParam(required = false) Integer page, Sort.Direction sort){
-        int pageNumber = getPageNumberGreaterThenZeroAndNotNull(page);
-        Sort.Direction sortDirection = getSortDirectionNotNullAndDESC(sort);
+    public ResponseEntity<CollectionModel<CommentDto>> getCommentsInPost(@PathVariable Long postId, @RequestParam(required = false) Integer page,
+                                                                         @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sort){
+        int pageNumber = PageHelper.getPageNumberGreaterThenZeroAndNotNull(page);
+        Sort.Direction sortDirection = SortDirectionHelper.getSortDirection(sort);
         List<CommentDto> comments = commentService.getCommentsFromPost(postId,pageNumber,sortDirection);
         for (CommentDto comment: comments){
             comment.add(linkTo(methodOn(CommentController.class).getSingleComment(postId,comment.getCommentId())).withRel("Comment"));
