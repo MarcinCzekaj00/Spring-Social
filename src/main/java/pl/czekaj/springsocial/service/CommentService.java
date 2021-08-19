@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CommentService {
+
     private static final int PAGE_SIZE = 50;
     private final CommentRepository commentRepository;
 
@@ -28,29 +29,29 @@ public class CommentService {
     }
 
     @Cacheable(cacheNames = "getCommentsFromPost")
-    public List<CommentDto> getCommentsFromPost(Long id, int page, Sort.Direction sort) {
-        List<Comment> comments = commentRepository.findAllByPostId(id,PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
+    public List<CommentDto> getCommentsFromPost(Long postId, int page, Sort.Direction sort) {
+        List<Comment> comments = commentRepository.findAllByPostId(postId,PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
         return CommentDtoMapper.mapToCommentDtos(comments);
     }
 
     @Cacheable(cacheNames = "getSingleComment")
-    public CommentDto getSingleComment(Long p_id,Long c_id){
-        Comment comment = commentRepository.findByPostIdAndCommentId(p_id,c_id);
+    public CommentDto getSingleComment(Long postId,Long commentId){
+        Comment comment = commentRepository.findByPostIdAndCommentId(postId,commentId);
         return CommentDtoMapper.mapToCommentDtos(comment);
     }
 
     @Cacheable(cacheNames = "addComment")
     @Transactional
-    public CommentDto addComment(Comment comment,Long id){
-        comment.setPostId(id);
+    public CommentDto addComment(Comment comment,Long postId){
+        comment.setPostId(postId);
         commentRepository.save(comment);
         return CommentDtoMapper.mapToCommentDtos(comment);
     }
 
     @Transactional
     @CachePut(cacheNames = "editComment", key= "#result.commentId")
-    public CommentDto editComment(Comment comment,Long id){
-        Comment editedComment = commentRepository.findByPostIdAndCommentId(id, comment.getCommentId());
+    public CommentDto editComment(Comment comment,Long postId){
+        Comment editedComment = commentRepository.findByPostIdAndCommentId(postId, comment.getCommentId());
         editedComment.setContent(comment.getContent());
         commentRepository.save(comment);
         return CommentDtoMapper.mapToCommentDtos(comment);
@@ -58,16 +59,16 @@ public class CommentService {
 
     @Transactional
     @CachePut(cacheNames = "editSingleComment", key= "#result.commentId")
-    public CommentDto editSingleComment(Comment comment,Long id,Long c_id){
+    public CommentDto editSingleComment(Comment comment,Long postId,Long commentId){
         comment.setContent(comment.getContent());
-        comment.setPostId(id);
-        comment.setCommentId(c_id);
+        comment.setPostId(postId);
+        comment.setCommentId(commentId);
         commentRepository.save(comment);
         return CommentDtoMapper.mapToCommentDtos(comment);
     }
 
     @CacheEvict(cacheNames = "deleteComment")
-    public void deleteComment(Long p_id,Long c_id){
-        commentRepository.deleteByCommentIdAndPostId(c_id,p_id);
+    public void deleteComment(Long postId,Long commentId){
+        commentRepository.deleteByCommentIdAndPostId(commentId,postId);
     }
 }

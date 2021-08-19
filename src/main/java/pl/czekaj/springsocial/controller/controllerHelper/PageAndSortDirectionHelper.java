@@ -6,6 +6,7 @@ public class PageAndSortDirectionHelper {
 
     private PageAndSortDirectionHelper(){
     }
+
     public static int getPageNumberGreaterThenZeroAndNotNull(Integer page){
         int pageNumber = page != null && page >=0 ? page : 0;
         return pageNumber;

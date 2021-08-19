@@ -31,7 +31,6 @@ public class UserDetailsController {
        Uncomment it and getDetails in UserDetailsService if needed
 
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/details")
     public ResponseEntity<List<UserDetailsDto>> getDetails(@RequestParam(required = false) Integer page, Sort.Direction sort){
@@ -41,28 +40,28 @@ public class UserDetailsController {
         return new ResponseEntity<>(details, HttpStatus.OK);
     }*/
 
-    @GetMapping("/users/{id}/details")
-    public ResponseEntity<EntityModel<UserDetailsDto>> getDetails(@PathVariable Long id){
-        UserDetailsDto details = userDetailsService.getSingleDetails(id);
-        details.add(linkTo(UserController.class).slash(id).withRel("User"));
-        Link link = linkTo(methodOn(UserDetailsController.class).getDetails(id)).withSelfRel();
+    @GetMapping("/users/{userId}/details")
+    public ResponseEntity<EntityModel<UserDetailsDto>> getDetails(@PathVariable Long userId){
+        UserDetailsDto details = userDetailsService.getSingleDetails(userId);
+        details.add(linkTo(UserController.class).slash(userId).withRel("User"));
+        Link link = linkTo(methodOn(UserDetailsController.class).getDetails(userId)).withSelfRel();
         EntityModel<UserDetailsDto> userDetailsDtoResource = new EntityModel<>(details,link);
         return new ResponseEntity<>(userDetailsDtoResource, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/users/{id}/details")
-    public ResponseEntity<UserDetailsDto> addDetails(@RequestBody UserDetails details, @PathVariable Long id){
-        return new ResponseEntity<>(userDetailsService.addDetails(details,id), HttpStatus.OK);
+    @PostMapping(value = "/users/{userId}/details")
+    public ResponseEntity<UserDetailsDto> addDetails(@RequestBody UserDetails details, @PathVariable Long userId){
+        return new ResponseEntity<>(userDetailsService.addDetails(details,userId), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/users/{id}/details")
-    public ResponseEntity<UserDetailsDto> editDetails(@RequestBody UserDetails details, @PathVariable Long id){
-        return new ResponseEntity<>(userDetailsService.editDetails(details,id), HttpStatus.OK);
+    @PutMapping(value = "/users/{userId}/details")
+    public ResponseEntity<UserDetailsDto> editDetails(@RequestBody UserDetails details, @PathVariable Long userId){
+        return new ResponseEntity<>(userDetailsService.editDetails(details,userId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/{id}/details")
-    public void deletePost(@PathVariable Long id){
-        userDetailsService.deleteDetails(id);
+    @DeleteMapping("/users/{userId}/details")
+    public void deletePost(@PathVariable Long userId){
+        userDetailsService.deleteDetails(userId);
     }
 
 }

@@ -34,6 +34,5 @@ public class AccountController {
         Link link = linkTo(methodOn(AccountController.class).viewUserAccountInfo()).withSelfRel();
         EntityModel<User> userResource = new EntityModel<>(user1,link);
         return new ResponseEntity<>(userResource, HttpStatus.OK);
-
     }
 }

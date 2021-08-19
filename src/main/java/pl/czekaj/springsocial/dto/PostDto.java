@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @Builder
 public class PostDto extends RepresentationModel<PostDto> {
-    private long id;
+    private Long id;
     private String content;
     private LocalDateTime timeCreated;
     private List<Comment> comments;

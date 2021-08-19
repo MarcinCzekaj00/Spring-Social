@@ -20,8 +20,8 @@ import java.util.Set;
 public class RelationshipService {
 
     private static final int PAGE_SIZE = 30;
-    private RelationshipRepository relationshipRepository;
-    private UserRepository userRepository;
+    private final RelationshipRepository relationshipRepository;
+    private final UserRepository userRepository;
 
     @Cacheable(cacheNames = "getFriends")
     public List<Long> getFriends(Long fromUserId, int page, Sort.Direction sort) {
@@ -30,13 +30,13 @@ public class RelationshipService {
 
     @Cacheable(cacheNames = "addFriend")
     @Transactional
-    public User addFriend(Long id,User userToAdd){
+    public User addFriend(Long userId,User userToAdd){
         User checkUserToAdd = userRepository.findById(userToAdd.getUserId()).orElseThrow();
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
         Relationship relationship = getRelationship(user, userToAdd);
         Relationship relationshipFeedBack = getRelationshipFeedback(user, userToAdd);
 
-        if(checkUserToAdd.equals(userToAdd) && relationshipRepository.findRelationship(id,checkUserToAdd.getUserId()) == null) {
+        if(checkUserToAdd.equals(userToAdd) && relationshipRepository.findRelationship(userId,checkUserToAdd.getUserId()) == null) {
 
             Set<Relationship> friends = user.getFriends();
             friends.add(relationship);
@@ -55,8 +55,8 @@ public class RelationshipService {
     }
 
     @CacheEvict(cacheNames = "deleteFriend")
-    public void deleteFriend(Long id, User userToDelete){
-        User user = userRepository.findById(id).orElseThrow();
+    public void deleteFriend(Long userId, User userToDelete){
+        User user = userRepository.findById(userId).orElseThrow();
         Relationship relationship = relationshipRepository.findRelationship(user.getUserId(),userToDelete.getUserId());
         Relationship relationshipFeedBack = relationshipRepository.findRelationshipFeedback(user.getUserId(),userToDelete.getUserId());
         relationshipRepository.delete(relationship);

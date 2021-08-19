@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class UserDetailsDto extends RepresentationModel<UserDetailsDto> {
-
     private Long userDetailsId;
     private LocalDateTime dateOfBirth;
     private int phoneNumber;

@@ -18,7 +18,6 @@ import java.util.Set;
 @Setter
 @Builder
 public class UserDto extends RepresentationModel<UserDto> {
-
     private Long userId;
     private String firstName;
     private String lastName;

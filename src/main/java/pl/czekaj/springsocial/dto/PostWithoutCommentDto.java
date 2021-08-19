@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class PostWithoutCommentDto extends RepresentationModel<PostWithoutCommentDto> {
-    private long id;
+    private Long id;
     private String content;
     private LocalDateTime timeCreated;
 }

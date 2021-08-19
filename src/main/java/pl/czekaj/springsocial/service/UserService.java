@@ -33,9 +33,9 @@ import java.util.Set;
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private UserDetailsManager userDetailsManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserDetailsManager userDetailsManager;
     private static final int PAGE_SIZE = 50;
 
     public void addWithDefaultRole(User user){
@@ -69,13 +69,13 @@ public class UserService {
 
 
     @Cacheable(cacheNames = "getSingleUser")
-    public UserDto getSingleUser(Long id){
-        User user = userRepository.findById(id).orElseThrow();
+    public UserDto getSingleUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow();
         return UserDtoMapper.mapToUserDtos(user);
     }
 
-    public User getUserInfo(Long id){
-        return userRepository.findById(id).orElseThrow();
+    public User getUserInfo(Long userId){
+        return userRepository.findById(userId).orElseThrow();
     }
 
     public User addUser(User user){
@@ -84,8 +84,8 @@ public class UserService {
 
     @Transactional
     @CachePut(cacheNames = "editSingleUser", key= "#result.userId")
-    public UserDto editSingleUser(User user, Long id){
-        user.setUserId(id);
+    public UserDto editSingleUser(User user, Long userId){
+        user.setUserId(userId);
         userRepository.save(user);
         return UserDtoMapper.mapToUserDtos(user);
     }
@@ -103,7 +103,7 @@ public class UserService {
     }
 
     @CacheEvict(cacheNames = "deleteUser")
-    public void deleteUser(Long id){
-        userRepository.deleteById(id);
+    public void deleteUser(Long userId){
+        userRepository.deleteById(userId);
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @JsonSerialize(using = RelationshipSerializer.class)
-public class Relationship extends RepresentationModel<Relationship> {
+public class Relationship {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

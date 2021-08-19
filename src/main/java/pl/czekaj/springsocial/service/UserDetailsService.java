@@ -21,7 +21,6 @@ import java.util.List;
 @Service
 public class UserDetailsService {
 
-    private static final int PAGE_SIZE = 10;
     private final UserDetailsRepository userDetailsRepository;
     private final UserRepository userRepository;
 
@@ -35,33 +34,33 @@ public class UserDetailsService {
     }*/
 
     @Cacheable(cacheNames = "getSingleDetails")
-    public UserDetailsDto getSingleDetails(Long id){
-        User user = userRepository.findById(id).orElseThrow();
+    public UserDetailsDto getSingleDetails(Long userId){
+        User user = userRepository.findById(userId).orElseThrow();
         UserDetails details = user.getDetails();
         return UserDetailsDtoMapper.mapToUserDetailsDtos(details);
     }
 
     @CachePut(cacheNames = "addDetails", key= "#result.userDetailsId")
-    public UserDetailsDto addDetails(UserDetails userDetails, Long id){
-        return setDetailsAndUserDetails(userDetails,id);
+    public UserDetailsDto addDetails(UserDetails userDetails, Long userId){
+        return setDetailsAndUserDetails(userDetails,userId);
     }
 
     @CachePut(cacheNames = "editDetails", key= "#result.userDetailsId")
-    public UserDetailsDto editDetails(UserDetails userDetails, Long id){
-        return setDetailsAndUserDetails(userDetails,id);
+    public UserDetailsDto editDetails(UserDetails userDetails, Long userId){
+        return setDetailsAndUserDetails(userDetails,userId);
     }
 
     @Transactional
     @CacheEvict(cacheNames = "deleteDetails")
-    public void deleteDetails(Long id){
-        User user = userRepository.findById(id).orElseThrow();
+    public void deleteDetails(Long userId){
+        User user = userRepository.findById(userId).orElseThrow();
         Long udId = user.getDetails().getUserDetailsId();
-        userRepository.removeDetails(id);
+        userRepository.removeDetails(userId);
         userDetailsRepository.removeDetails(udId);
     }
 
-    private UserDetailsDto setDetailsAndUserDetails(UserDetails userDetails, Long id){
-        User user = userRepository.findById(id).orElseThrow();
+    private UserDetailsDto setDetailsAndUserDetails(UserDetails userDetails, Long userId){
+        User user = userRepository.findById(userId).orElseThrow();
         user.setDetails(userDetails);
         userDetailsRepository.save(userDetails);
         userRepository.save(user);
