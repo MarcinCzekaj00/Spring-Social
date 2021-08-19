@@ -49,7 +49,7 @@ public class UserDetailsController {
 
     @PostMapping(value = "/users/{userId}/details")
     public ResponseEntity<UserDetailsDto> addDetails(@RequestBody UserDetails details, @PathVariable Long userId){
-        return new ResponseEntity<>(userDetailsService.addDetails(details,userId), HttpStatus.OK);
+        return new ResponseEntity<>(userDetailsService.addDetails(details,userId), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/users/{userId}/details")
