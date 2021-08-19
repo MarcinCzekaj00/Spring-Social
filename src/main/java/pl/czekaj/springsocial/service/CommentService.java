@@ -27,21 +27,18 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    @Cacheable(cacheNames = "getComments")
     public List<CommentDto> getComments(int page, Sort.Direction sort) {
         List<Comment> comments = commentRepository.findAllComments(PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
         if(comments.isEmpty()) throw new CommentNotFoundException();
         return CommentDtoMapper.mapToCommentDtos(comments);
     }
 
-    @Cacheable(cacheNames = "getCommentsFromPost")
     public List<CommentDto> getCommentsFromPost(Long postId, int page, Sort.Direction sort) {
         List<Comment> comments = commentRepository.findAllByPostId(postId,PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
         if(comments.isEmpty()) throw new CommentNotFoundException();
         return CommentDtoMapper.mapToCommentDtos(comments);
     }
 
-    @Cacheable(cacheNames = "getSingleComment")
     public CommentDto getSingleComment(Long postId,Long commentId){
         postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
         commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException(commentId));
@@ -49,7 +46,6 @@ public class CommentService {
         return CommentDtoMapper.mapToCommentDtos(comment);
     }
 
-    @Cacheable(cacheNames = "addComment")
     @Transactional
     public CommentDto addComment(Comment comment,Long postId){
         try{
@@ -62,7 +58,6 @@ public class CommentService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "editComment", key= "#result.commentId")
     public CommentDto editComment(Comment comment,Long postId){
         postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
         commentRepository.findById(comment.getCommentId()).orElseThrow(() -> new CommentNotFoundException(comment.getCommentId()));
@@ -73,7 +68,6 @@ public class CommentService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "editSingleComment", key= "#result.commentId")
     public CommentDto editSingleComment(Comment comment,Long postId,Long commentId){
         postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
         commentRepository.findById(comment.getCommentId()).orElseThrow(() -> new CommentNotFoundException(comment.getCommentId()));
@@ -85,7 +79,6 @@ public class CommentService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "deleteComment")
     public void deleteComment(Long postId,Long commentId){
         postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
         commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException(commentId));

@@ -23,12 +23,10 @@ public class RelationshipService {
     private final RelationshipRepository relationshipRepository;
     private final UserRepository userRepository;
 
-    @Cacheable(cacheNames = "getFriends")
     public List<Long> getFriends(Long fromUserId, int page, Sort.Direction sort) {
         return relationshipRepository.findAllFriends(fromUserId,PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "relationshipId")));
     }
 
-    @Cacheable(cacheNames = "addFriend")
     @Transactional
     public User addFriend(Long userId,User userToAdd){
         User checkUserToAdd = userRepository.findById(userToAdd.getUserId()).orElseThrow();
@@ -54,7 +52,6 @@ public class RelationshipService {
         throw new IllegalArgumentException();
     }
 
-    @CacheEvict(cacheNames = "deleteFriend")
     public void deleteFriend(Long userId, User userToDelete){
         User user = userRepository.findById(userId).orElseThrow();
         Relationship relationship = relationshipRepository.findRelationship(user.getUserId(),userToDelete.getUserId());

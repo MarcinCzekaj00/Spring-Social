@@ -61,14 +61,12 @@ public class UserService {
         }
     }
 
-    @Cacheable(cacheNames = "getUsers")
     public List<UserDto> getUsers(int page, Sort.Direction sort) {
         List <User> users = userRepository.findAllUsers(PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "userId")));
         return UserDtoMapper.mapToUserDtos(users);
     }
 
 
-    @Cacheable(cacheNames = "getSingleUser")
     public UserDto getSingleUser(Long userId){
         User user = userRepository.findById(userId).orElseThrow();
         return UserDtoMapper.mapToUserDtos(user);
@@ -83,7 +81,6 @@ public class UserService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "editSingleUser", key= "#result.userId")
     public UserDto editSingleUser(User user, Long userId){
         user.setUserId(userId);
         userRepository.save(user);
@@ -91,7 +88,6 @@ public class UserService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "editUser", key= "#result.userId")
     public UserDto editUser(User user){
         User editedUser = userRepository.findById(user.getUserId()).orElseThrow();
         editedUser.setRole(user.getRole());
@@ -102,7 +98,6 @@ public class UserService {
         return UserDtoMapper.mapToUserDtos(editedUser);
     }
 
-    @CacheEvict(cacheNames = "deleteUser")
     public void deleteUser(Long userId){
         userRepository.deleteById(userId);
     }

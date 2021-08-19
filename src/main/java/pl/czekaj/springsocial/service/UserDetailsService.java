@@ -33,25 +33,21 @@ public class UserDetailsService {
         return UserDetailsDtoMapper.mapToUserDetailsDtos(details);
     }*/
 
-    @Cacheable(cacheNames = "getSingleDetails")
     public UserDetailsDto getSingleDetails(Long userId){
         User user = userRepository.findById(userId).orElseThrow();
         UserDetails details = user.getDetails();
         return UserDetailsDtoMapper.mapToUserDetailsDtos(details);
     }
 
-    @CachePut(cacheNames = "addDetails", key= "#result.userDetailsId")
     public UserDetailsDto addDetails(UserDetails userDetails, Long userId){
         return setDetailsAndUserDetails(userDetails,userId);
     }
 
-    @CachePut(cacheNames = "editDetails", key= "#result.userDetailsId")
     public UserDetailsDto editDetails(UserDetails userDetails, Long userId){
         return setDetailsAndUserDetails(userDetails,userId);
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "deleteDetails")
     public void deleteDetails(Long userId){
         User user = userRepository.findById(userId).orElseThrow();
         Long udId = user.getDetails().getUserDetailsId();

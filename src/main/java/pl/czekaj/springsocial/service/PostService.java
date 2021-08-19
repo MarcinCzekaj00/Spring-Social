@@ -1,6 +1,8 @@
 package pl.czekaj.springsocial.service;
 
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.TypeCache;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,20 +32,17 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    @Cacheable(cacheNames = "getPosts")
     public List<PostWithoutCommentDto> getPosts(int page, Sort.Direction sort) {
         List<Post> posts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
         if(posts.isEmpty()) throw new PostNotFoundException();
         return PostWithoutCommentDtoMapper.mapToPostWithoutCommentDtos(posts);
     }
 
-    @Cacheable(cacheNames = "getSinglePost")
     public PostDto getSinglePost(Long id){
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         return PostDtoMapper.mapToPostDtos(post);
     }
 
-    @Cacheable(cacheNames = "getPostsWithComments")
     public List<PostDto> getPostsWithComments(int page, Sort.Direction sort){
         List<Post> posts = postRepository.findAllPosts(PageRequest.of(page, PAGE_SIZE, Sort.by(sort, "timeCreated")));
         if(posts.isEmpty()) throw new PostNotFoundException();
@@ -73,7 +72,6 @@ public class PostService {
         return PostWithoutCommentDtoMapper.mapToPostWithoutCommentDtos(post);
     }
 
-    @CachePut(cacheNames = "editPost", key= "#result.id")
     @Transactional
     public PostDto editPost(Post post){
         Post editedPost = postRepository.findById(post.getPostId()).orElseThrow(PostNotFoundException::new);
@@ -82,7 +80,6 @@ public class PostService {
         return PostDtoMapper.mapToPostDtos(post);
     }
 
-    @CachePut(cacheNames = "editSinglePost", key= "#result.id")
     @Transactional
     public PostDto editSinglePost(Post post,Long id){
         postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
@@ -91,7 +88,6 @@ public class PostService {
         return PostDtoMapper.mapToPostDtos(post);
     }
 
-    @CacheEvict(cacheNames = "deletePost")
     public void deletePost(Long id){
         postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         postRepository.deleteById(id);
