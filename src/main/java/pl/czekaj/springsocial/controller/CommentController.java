@@ -63,7 +63,7 @@ public class CommentController {
 
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommentDto> addComment(@RequestBody Comment comment, @PathVariable Long postId){
-        return new ResponseEntity<>(commentService.addComment(comment,postId), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.addComment(comment,postId), HttpStatus.CREATED);
     }
 
     @PutMapping("/posts/{postId}/comments")

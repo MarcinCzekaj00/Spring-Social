@@ -81,7 +81,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostWithoutCommentDto> addPost(@RequestBody Post post){
-        return new ResponseEntity<>(postService.addPost(post), HttpStatus.OK);
+        return new ResponseEntity<>(postService.addPost(post), HttpStatus.CREATED);
     }
 
     @PutMapping
