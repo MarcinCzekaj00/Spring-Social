@@ -1,9 +1,6 @@
 package pl.czekaj.springsocial.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import pl.czekaj.springsocial.dto.UserDto;
@@ -82,9 +77,13 @@ public class UserService {
 
     @Transactional
     public UserDto editSingleUser(User user, Long userId){
-        user.setUserId(userId);
-        userRepository.save(user);
-        return UserDtoMapper.mapToUserDtos(user);
+        User editedUser = userRepository.findById(userId).orElseThrow();
+        editedUser.setRole(user.getRole());
+        editedUser.setEmail(user.getEmail());
+        editedUser.setFirstName(user.getFirstName());
+        editedUser.setLastName(user.getLastName());
+        userRepository.save(editedUser);
+        return UserDtoMapper.mapToUserDtos(editedUser);
     }
 
     @Transactional
