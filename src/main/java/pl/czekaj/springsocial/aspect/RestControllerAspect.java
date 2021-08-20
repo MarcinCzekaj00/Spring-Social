@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 /*
 	The task of this class is only to show
-	my knowledge about AOP expect advices in exception packages
+	my knowledge about AOP except advices in exception packages
  */
 
 @Aspect
@@ -30,11 +30,11 @@ public class RestControllerAspect {
 		log.info("======== AOP Before RestAPI Call ==========" + pjp.getSignature());
 		try {
 			Object result = pjp.proceed();
-			log.info("======== After RestAPI Call" + result.toString());
+			log.info("======== After RestAPI Call ==========" + result.toString());
 		} catch(Exception e) {
-			log.info("======== After RestAPI Call Throwing");
+			log.info("======== After RestAPI Call Throwing ==========");
 		} finally {
-			log.info("======== After RestAPI Call Returning");
+			log.info("======== After RestAPI Call Returning ==========");
 		}
 	}
 
