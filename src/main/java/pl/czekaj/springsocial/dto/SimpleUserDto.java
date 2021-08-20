@@ -1,9 +1,7 @@
 package pl.czekaj.springsocial.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import pl.czekaj.springsocial.enums.Role;
 import pl.czekaj.springsocial.model.Post;

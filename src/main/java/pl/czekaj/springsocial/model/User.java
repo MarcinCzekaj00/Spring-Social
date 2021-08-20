@@ -1,5 +1,6 @@
 package pl.czekaj.springsocial.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import pl.czekaj.springsocial.enums.Role;
@@ -10,13 +11,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Set;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode
+@EqualsAndHashCode (callSuper = false)
 public class User extends RepresentationModel<User> {
 
     @Id

@@ -23,7 +23,7 @@ import pl.czekaj.springsocial.config.jwtAuthentication.RestAuthenticationSuccess
 
 import javax.sql.DataSource;
 
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -63,16 +63,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/").permitAll()
-                .anyRequest().permitAll();
-                //.and()
-                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                //.and()
-                //.httpBasic()
-                //.and()
-                //.addFilter(authenticationFilter())
-                //.addFilter(new JwtAuthorizationFilter(authenticationManager(),userDetailsManager(),secret))
-                //.exceptionHandling()
-                //.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .httpBasic()
+                .and()
+                .addFilter(authenticationFilter())
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(),userDetailsManager(),secret));
     }
 
     public JsonObjectAuthenticationFilter authenticationFilter() throws Exception {

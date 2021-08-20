@@ -8,9 +8,13 @@ public class SortDirectionHelper {
     }
 
     public static Sort.Direction getSortDirection(Sort.Direction sortDirection){
+
+        if(sortDirection == null) return getSortDirectionNotNullAndDESC(sortDirection);
+
         if(sortDirection.equals(Sort.Direction.ASC)){
             return getSortDirectionNotNullAndASC(sortDirection);
         } else return getSortDirectionNotNullAndDESC(sortDirection);
+
     }
 
     private static Sort.Direction getSortDirectionNotNullAndASC(Sort.Direction sort){

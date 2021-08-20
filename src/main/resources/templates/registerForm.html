@@ -11,7 +11,7 @@
 <body>
     <h1>Registration form</h1>
     <form action="#" method="post" th:action="@{/register}" th:object="${user}">
-        <input th:value="*{firstName}" placeholder="First Name" />
+        <input th:field="*{firstName}" placeholder="First Name" />
         <p th:errors="*{firstName}">First name errors</p><br />
         <input th:field="*{lastName}" placeholder="Last Name" />
         <p th:errors="*{lastName}">Last name errors</p><br />

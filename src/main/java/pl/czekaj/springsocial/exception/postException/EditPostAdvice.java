@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class EditPostAdvice {
 
     @ResponseBody
-    @ExceptionHandler(AddPostException.class)
-    public ResponseEntity<ApiException> editPostExceptionHandler(AddPostException e){
+    @ExceptionHandler(EditPostException.class)
+    public ResponseEntity<ApiException> editPostExceptionHandler(EditPostException e){
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         ApiException exception = new ApiException(
                 e.getMessage(),
