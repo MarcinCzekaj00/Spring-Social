@@ -1,19 +1,14 @@
 package pl.czekaj.springsocial.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.czekaj.springsocial.dto.PostDto;
 import pl.czekaj.springsocial.dto.UserDetailsDto;
 import pl.czekaj.springsocial.model.UserDetails;
 import pl.czekaj.springsocial.service.UserDetailsService;
-
-import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

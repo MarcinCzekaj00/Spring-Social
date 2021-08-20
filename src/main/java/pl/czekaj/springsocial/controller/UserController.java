@@ -1,6 +1,5 @@
 package pl.czekaj.springsocial.controller;
 
-import javassist.runtime.Desc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;

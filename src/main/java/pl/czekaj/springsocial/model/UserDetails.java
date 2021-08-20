@@ -1,11 +1,11 @@
 package pl.czekaj.springsocial.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.lang.Nullable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Getter

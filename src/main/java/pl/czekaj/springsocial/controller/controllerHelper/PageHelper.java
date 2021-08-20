@@ -1,8 +1,5 @@
 package pl.czekaj.springsocial.controller.controllerHelper;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-
 public class PageHelper {
 
     private PageHelper(){

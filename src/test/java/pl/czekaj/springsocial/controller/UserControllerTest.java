@@ -1,7 +1,6 @@
 package pl.czekaj.springsocial.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,15 +19,13 @@ import pl.czekaj.springsocial.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
