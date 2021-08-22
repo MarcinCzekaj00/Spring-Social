@@ -1,9 +1,6 @@
 package pl.czekaj.springsocial.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -70,7 +67,7 @@ public class CommentService {
     @Transactional
     public CommentDto editSingleComment(Comment comment,Long postId,Long commentId){
         postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
-        commentRepository.findById(comment.getCommentId()).orElseThrow(() -> new CommentNotFoundException(comment.getCommentId()));
+        commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException(comment.getCommentId()));
         comment.setContent(comment.getContent());
         comment.setPostId(postId);
         comment.setCommentId(commentId);
