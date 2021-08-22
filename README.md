@@ -57,7 +57,7 @@ Example:
 ```json
 {
 	"username": "admin", 
-        "password" "password"
+        "password":"password"
 }
 ```
 ### Account info
