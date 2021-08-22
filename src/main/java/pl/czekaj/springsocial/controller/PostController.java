@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.czekaj.springsocial.controller.controllerHelper.PageHelper;
 import pl.czekaj.springsocial.controller.controllerHelper.SortDirectionHelper;
 import pl.czekaj.springsocial.dto.CommentDto;
-import pl.czekaj.springsocial.dto.PostWithoutCommentDto;
 import pl.czekaj.springsocial.dto.PostDto;
+import pl.czekaj.springsocial.dto.PostWithoutCommentDto;
 import pl.czekaj.springsocial.model.Comment;
 import pl.czekaj.springsocial.model.Post;
 import pl.czekaj.springsocial.service.CommentService;
@@ -55,7 +55,7 @@ public class PostController {
         for (PostDto post: posts){
             Long postId = post.getId();
             post.add(linkTo(PostController.class).slash(post.getId()).withSelfRel());
-            List <CommentDto> comments = commentService.getComments(pageNumber,sortDirection);
+            List <CommentDto> comments = commentService.getCommentsFromPost(postId,pageNumber,sortDirection);
             for (CommentDto comment:comments){
                 post.add(linkTo(methodOn(CommentController.class).getSingleComment(postId,comment.getCommentId())).withRel("Comments"));
             }
