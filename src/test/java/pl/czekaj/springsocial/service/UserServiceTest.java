@@ -100,6 +100,7 @@ class UserServiceTest {
     @Test
     void shouldEditSingleUser() {
         //given
+        given(userRepository.findById(1L)).willReturn(Optional.of(u1));
         given(userRepository.save(u1)).willReturn(u1);
 
         //when
